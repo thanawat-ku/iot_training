@@ -1,40 +1,45 @@
 //ลงทะเบียนขอรหัส token ที่ https://notify-bot.line.me/my/
 
-#include <TridentTD_LineNotify.h>
+#include <WiFi.h> // นำเข้าไลบรารี่ WiFi
+#include <ArtronShop_LineNotify.h> // นำเข้าไลบารี่ ArtronShop_LineNotify
 
-#define SSID        "--------------------"
-#define PASSWORD    "--------------------"
-#define LINE_TOKEN  "--------------------"
+const char* ssid = "WiFi Name"; // ชื่อ WiFi
+const char* password = "WiFi Password"; // รหัสผ่าน WiFi
+#define LINE_TOKEN "LINE Token" // LINE Token
 
 void setup() {
-  Serial.begin(115200); Serial.println();
-  Serial.println(LINE.getVersion());
-  
-  WiFi.begin(SSID, PASSWORD);
-  Serial.printf("WiFi connecting to %s\n",  SSID);
-  while(WiFi.status() != WL_CONNECTED) { Serial.print("."); delay(400); }
-  Serial.printf("\nWiFi connected\nIP : ");
-  Serial.println(WiFi.localIP());  
+  Serial.begin(115200); // เริ่มต้นใช้ Serial ที่ความเร็ว 115200
+  while (!Serial) { delay(100); }
 
-  // กำหนด Line Token
-  LINE.setToken(LINE_TOKEN);
+  // We start by connecting to a WiFi network
 
-  // ตัวอย่างส่งข้อความ
-  LINE.notify("อุณหภูมิ เกินกำหนด");
+  Serial.println();
+  Serial.println("******************************************************");
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
 
-  // ตัวอย่างส่งข้อมูล ตัวเลข
-  LINE.notify(2342);          // จำนวนเต็ม
-  LINE.notify(212.43434,5);   // จำนวนจริง แสดง 5 หลัก
+  WiFi.begin(ssid, password); // เริ่มต้นเชื่อมต่อ WiFi
 
-  // เลือก Line Sticker ได้จาก https://devdocs.line.me/files/sticker_list.pdf
-  LINE.notifySticker(3,240);        // ส่ง Line Sticker ด้วย PackageID 3 , StickerID 240
-  LINE.notifySticker("Hello",1,2);  // ส่ง Line Sticker ด้วย PackageID 1 , StickerID 2  พร้อมข้อความ
+  while (WiFi.status() != WL_CONNECTED) { // วนลูปหากยังเชื่อมต่อ WiFi ไม่สำเร็จ
+    delay(500);
+    Serial.print(".");
+  }
 
-  // ตัวอย่างส่ง รูปภาพ ด้วย url
-  LINE.notifyPicture("https://preview.ibb.co/j6G51n/capture25610417181915334.png");
-  LINE.notifyPicture("จตุธาตุ","https://www.fotoaparat.cz/storage/pm/09/10/23/670915_a5351.jpg");
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  LINE.begin(LINE_TOKEN); // เริ่มต้นใช้ LINE Notify
+
+  if (LINE.send("รถโดนขโมย")) {  // ถ้าส่งข้อความ "รถโดนขโมย" ไปที่ LINE สำเร็จ
+    Serial.println("Send notify successful"); // ส่งข้อความ "Send notify successful" ไปที่ Serial Monitor
+  } else { // ถ้าส่งไม่สำเร็จ
+    Serial.printf("Send notify fail. check your token (code: %d)\n", LINE.status_code); // ส่งข้อความ "Send notify fail" ไปที่ Serial Monitor
+  }
 }
 
 void loop() {
-  delay(1);
+
+}
 }
