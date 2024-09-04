@@ -1,44 +1,43 @@
-//ลงทะเบียนขอรหัส token ที่ https://notify-bot.line.me/my/
+#include "DHT.h"
+#define DHTPIN 2
 
-#include <WiFi.h> // นำเข้าไลบรารี่ WiFi
-#include <ArtronShop_LineNotify.h> // นำเข้าไลบารี่ ArtronShop_LineNotify
+// Uncomment whatever type you're using!
+#define DHTTYPE DHT11   // DHT 11
+//#define DHTTYPE DHT22   // DHT 22  (AM2302), AM2321
+//#define DHTTYPE DHT21   // DHT 21 (AM2301)
 
-const char* ssid = "WiFi Name"; // ชื่อ WiFi
-const char* password = "WiFi Password"; // รหัสผ่าน WiFi
-#define LINE_TOKEN "LINE Token" // LINE Token
+DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
-  Serial.begin(115200); // เริ่มต้นใช้ Serial ที่ความเร็ว 115200
-  while (!Serial) { delay(100); }
+  Serial.begin(9600);
+  Serial.println(F("DHTxx test!"));
 
-  // We start by connecting to a WiFi network
-
-  Serial.println();
-  Serial.println("******************************************************");
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
-
-  WiFi.begin(ssid, password); // เริ่มต้นเชื่อมต่อ WiFi
-
-  while (WiFi.status() != WL_CONNECTED) { // วนลูปหากยังเชื่อมต่อ WiFi ไม่สำเร็จ
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
-
-  LINE.begin(LINE_TOKEN); // เริ่มต้นใช้ LINE Notify
-
-  if (LINE.send("รถโดนขโมย")) {  // ถ้าส่งข้อความ "รถโดนขโมย" ไปที่ LINE สำเร็จ
-    Serial.println("Send notify successful"); // ส่งข้อความ "Send notify successful" ไปที่ Serial Monitor
-  } else { // ถ้าส่งไม่สำเร็จ
-    Serial.printf("Send notify fail. check your token (code: %d)\n", LINE.status_code); // ส่งข้อความ "Send notify fail" ไปที่ Serial Monitor
-  }
+  dht.begin();
 }
 
 void loop() {
+  // Wait a few seconds between measurements.
+  delay(2000);
 
+  // Reading temperature or humidity takes about 250 milliseconds!
+  // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+  float h = dht.readHumidity();
+  // Read temperature as Celsius (the default)
+  float t = dht.readTemperature();
+  // Read temperature as Fahrenheit (isFahrenheit = true)
+  float f = dht.readTemperature(true);
+
+  // Check if any reads failed and exit early (to try again).
+  if (isnan(h) || isnan(t) || isnan(f)) {
+    Serial.println(F("Failed to read from DHT sensor!"));
+    return;
+  }
+
+  Serial.print(F("Humidity: "));
+  Serial.print(h);
+  Serial.print(F("%  Temperature: "));
+  Serial.print(t);
+  Serial.print(F("°C "));
+  Serial.print(f);
+  Serial.println(F("°F"));
 }
