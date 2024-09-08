@@ -8,3 +8,6 @@
 
 pinout
 https://mischianti.org/esp32-devkitc-v4-high-resolution-pinout-and-specs/
+
+official web site
+https://www.arduino.cc/
