@@ -5,3 +5,6 @@
 - Lab 3 analog input
 - Lab 4 DHT
 - Lab 5 Line notify
+
+pinout
+https://mischianti.org/esp32-devkitc-v4-high-resolution-pinout-and-specs/
